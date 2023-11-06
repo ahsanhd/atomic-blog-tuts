@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { faker } from "@faker-js/faker";
 import { usePosts, PostProvider } from "./PostContext";
 function createRandomPost() {
@@ -17,6 +17,13 @@ function App() {
     },
     [isFakeDark]
   );
+  ////////////////////////////////////////////////////////////////For Test Purposes i.e. Usemem and useCallback hooks and memo too ////////////////////////////////////////
+  const info = useMemo(() => {
+    return {
+      title: "bala baala bala bala check Profiler from React Developer tools",
+      show: false,
+    };
+  }, []);
 
   return (
     //2) use the Broadcastor where to Provide and define the value which is state or data you want the consumer components to use
@@ -31,7 +38,7 @@ function App() {
       <PostProvider>
         <Header />
         <Main />
-        <Archive />
+        <Archive show={info} />
         <Footer />
       </PostProvider>
     </section>
@@ -132,7 +139,7 @@ function List() {
   );
 }
 
-function Archive() {
+const Archive = memo(function Archive({ show, info }) {
   const { onAddPost } = usePosts();
 
   // Here we don't need the setter function. We're only using state to store these posts because the callback function passed into useState (which generates the posts) is only called once, on the initial render. So we use this trick as an optimization technique, because if we just used a regular variable, these posts would be re-created on every render. We could also move the posts outside the components, but I wanted to show you this trick 😉
@@ -141,7 +148,7 @@ function Archive() {
     Array.from({ length: 10000 }, () => createRandomPost())
   );
 
-  const [showArchive, setShowArchive] = useState(false);
+  const [showArchive, setShowArchive] = useState(info.show);
 
   return (
     <aside>
@@ -164,7 +171,7 @@ function Archive() {
       )}
     </aside>
   );
-}
+});
 
 function Footer() {
   return <footer>&copy; by The Atomic Blog ✌️</footer>;
